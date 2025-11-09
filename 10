@@ -1,0 +1,7 @@
+B = 3.4 * 10^3;
+SNR = 30;
+printf("SNR=%d\n", SNR);
+SN = 10^(SNR / 10);
+C = B * log2(1 + SN);
+printf("C=%d\n", C);
+printf("information capacity of telephone is C=%.2fkbps", C/1000);
