@@ -1,0 +1,20 @@
+//% Probabilities of symbols
+pa1 = 0.81;
+pa2 = 0.09;
+pa3 = 0.09;
+pa4 = 0.01;
+//% Codeword lengths
+n1 = 1;
+n2 = 2;
+n3 = 3;
+n4 = 3;
+//% Average codeword length
+L = pa1*n1 + pa2*n2 + pa3*n3 + pa4*n4;
+//% Source entropy (H(X))
+HX2 = pa1*log2(1/pa1) + pa2*log2(1/pa2) + pa3*log2(1/pa3) + pa4*log2(1/pa4);
+//% Code efficiency
+n = HX2 / L;
+printf("Code efficiency = %.2f%%\n", n * 100);
+//% Code redundancy
+r = 1 - n;
+printf("Code redundancy = %.2f%%\n", r * 100);
