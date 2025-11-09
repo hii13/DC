@@ -1,0 +1,11 @@
+p=0.1;
+p_undeterr1 = 6*(p^2)*((1-p)^2)+(p^4);
+printf("p=%f\n", p);
+printf("p_undeterr1=%f\n", p_undeterr1);
+disp("probability of error in detection for p=0.1 is " + string(p_undeterr1))
+
+p=0.1;
+p_undeterr2 = 6*(p^2)*((1-p)^2)+(p^4);
+printf("\np=%f\n", p);
+printf("p_undeterr1=%f\n", p_undeterr2); // Typo in original image: was p_undeterr1
+disp("probability of error in detection for p=0.01 is" + string(p_undeterr2))
