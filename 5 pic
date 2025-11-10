@@ -1,0 +1,75 @@
+#include <p18f4550.h>
+
+// Configuration Bits (fuses)
+#pragma config FOSC = HS     // Oscillator: High-Speed crystal
+#pragma config WDT = OFF     // Watchdog Timer: Off
+#pragma config LVP = OFF     // Low-Voltage Programming: Off
+#pragma config PBADEN = OFF  // PORTB A/D Enable: PORTB<4:0> pins are digital I/O
+
+// Pin definitions
+#define Irbit PORTBbits.RB4 // Switch 0 (SWO) on pin RB4
+#define rlbit PORTBbits.RB5 // Switch 1 (SW1) on pin RB5
+#define buzzer PORTCbits.RC2
+#define relay PORTCbits.RC1
+
+// Simple delay function
+void MsDelay (unsigned int time)
+{
+    unsigned int i, j;
+    for (i=0; i < time; i++)
+        for (j=0; j<275; j++); // Simple loop for delay
+}
+
+void main()
+{
+    unsigned char val=0;
+    
+    // --- Initialization ---
+    INTCON2bits.RBPU = 0; // Enable PORTB pull-up resistors (active)
+    ADCON1 = 0x0F;        // Set all A/D pins to digital I/O
+    
+    // Set pin directions
+    TRISBbits.TRISB4 = 1; // RB4 (Irbit) as input
+    TRISBbits.TRISB5 = 1; // RB5 (rlbit) as input
+    TRISCbits.TRISC1 = 0; // RC1 (relay) as output
+    TRISCbits.TRISC2 = 0; // RC2 (buzzer) as output
+    TRISD = 0x00;         // All PORTD pins as output
+    
+    PORTD = 0x00;         // Turn off all LEDs on PORTD
+    buzzer = 0;           // Turn off buzzer
+    relay = 0;            // Turn off relay
+    
+    // --- Main Loop ---
+    while (1)
+    {
+        if (!(Irbit)) // if (Irbit == 0), i.e., switch is pressed
+            val = 1;
+            
+        if (!(rlbit)) // if (rlbit == 0), i.e., switch is pressed
+            val = 2;
+            
+        if (val == 1) // Action for Switch 0
+        {
+            buzzer = 1; // Turn on buzzer
+            relay = 1;  // Turn on relay
+            
+            PORTD = PORTD >> 1; // Shift LEDs to the right
+            if (PORTD == 0x00)  // If all LEDs are off
+                PORTD = 0x80;   // Reset to the first LED (D7)
+            
+            MsDelay(250);
+        }
+        
+        if (val == 2) // Action for Switch 1
+        {
+            buzzer = 0; // Turn off buzzer
+            relay = 0;  // Turn off relay
+            
+            PORTD = PORTD << 1; // Shift LEDs to the left
+            if (PORTD == 0x00)  // If all LEDs are off
+                PORTD = 0x01;   // Reset to the first LED (D0)
+                
+            MsDelay(250);
+        }
+    }
+}
