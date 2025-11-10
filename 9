@@ -17,14 +17,6 @@ void delay(unsigned int time) {
     }
 }
 
-// A much longer delay for PWM
-void low_speed_delay(unsigned int time) {
-    unsigned int i, j;
-    for(i = 0; i < time; i++) {
-        for(j = 0; j < 100000; j++); // Significantly larger loop
-    }
-}
-
 void main() {
     // Initial motor direction: (1, 0) -> e.g., Clockwise
     motor_pin1 = 1;
@@ -47,40 +39,11 @@ void main() {
             }
             delay(50); // Another debounce delay
         }
-        
-        // --- Speed Control (PWM) Logic ---
-        // This part runs regardless of the button press, but the direction
-        // (set by the logic above) is maintained.
-        
-        // This code is problematic. It tries to set (1,0) then (0,0)
-        // This will override the direction set by the button.
-        
-        /* * --- Original Code's (flawed) PWM Logic ---
-         * motor_pin1 = 1;
-         * motor_pin2 = 0;
-         * low_speed_delay(10); // Motor ON for a long time
-         * motor_pin1 = 0;
-         * motor_pin2 = 0; // Motor OFF (Brake)
-         * low_speed_delay(10); // OFF delay
-         */
-         
-         // --- A Corrected PWM Logic would be: ---
-         // (Assuming motor_pin1 and motor_pin2 hold the correct direction)
-         
-         // 1. Keep the current direction, but pulse the motor ON
-         // (This requires an 'Enable' pin, which isn't defined, 
-         // so we'll pulse the pins themselves)
          
          if (motor_direction == 1) { // CCW
              motor_pin1 = 0; motor_pin2 = 1;
          } else { // CW
              motor_pin1 = 1; motor_pin2 = 0;
          }
-         low_speed_delay(10); // --- Motor ON Period ---
-         
-         // 2. Turn motor OFF (Brake)
-         motor_pin1 = 0;
-         motor_pin2 = 0;
-         low_speed_delay(10); // --- Motor OFF Period ---
     }
 }
