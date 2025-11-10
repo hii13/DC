@@ -1,0 +1,42 @@
+#include <reg51.h>
+
+void delay (int k);
+
+void main()
+{
+    unsigned char i;
+    // Hex codes for digits 0-9 for a Common Cathode 7-segment display
+    // (gfedcba)
+    unsigned char arr[10] = {
+        0x3F, // 0 (0011 1111)
+        0x06, // 1 (0000 0110)
+        0x5B, // 2 (0101 1011)
+        0x4F, // 3 (0100 1111)
+        0x66, // 4 (0110 0110)
+        0x6D, // 5 (0110 1101)
+        0x7D, // 6 (0111 1101)
+        0x07, // 7 (0000 0111)
+        0x7F, // 8 (0111 1111)
+        0x67  // 9 (0110 0111)
+    };
+    
+    PO = 0x00; // Initialize Port 0 (all segments off)
+    
+    while (1) // Infinite loop
+    {
+        // Loop through all 10 digits
+        for (i=0; i<10; i++)
+        {
+            PO = arr[i]; // Send the hex code for digit 'i' to Port 0
+            delay(100);  // Hold the digit on the display
+        }
+    }
+}
+
+// Simple busy-wait delay function
+void delay (int k)
+{
+    int i, j;
+    for (i=0; i<k; i++)
+        for (j=0; j<1275; j++);
+}
