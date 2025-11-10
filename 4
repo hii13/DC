@@ -1,0 +1,40 @@
+#include<reg51.h>
+
+void delay(unsigned int time);
+
+void main()
+{
+    PO = 0x00; // Initialize Port 0
+    while (1)
+    {
+        // Step 1: Energize coil A
+        PO = 0x09; // 0000 1001
+        delay(100);
+
+        // Step 2: Energize coil B
+        PO = 0x0A; // 0000 1010
+        delay(100);
+
+        // Step 3: Energize coil C
+        PO = 0x06; // 0000 0110
+        delay(100);
+
+        // Step 4: Energize coil D
+        PO = 0x05; // 0000 0101
+        delay(100);
+    }
+}
+
+void delay(unsigned int time)
+{
+    unsigned int i;
+    TMOD = 0x10; // Timer 1, Mode 1 (16-bit timer)
+    for (i=0; i < time; i++) {
+        TH1 = 0xFF; // Load high byte for a short delay
+        TL1 = 0x49; // Load low byte
+        TR1 = 1;    // Start Timer 1
+        while (TF1 == 0); // Wait for timer overflow flag
+        TR1 = 0;    // Stop Timer 1
+        TF1 = 0;    // Clear overflow flag
+    }
+}
