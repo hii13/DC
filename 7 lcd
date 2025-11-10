@@ -1,0 +1,68 @@
+#include <reg51.h> // Include register definition file for AT89C51
+
+#define LCD P0       // Define LCD data port as Port 0
+
+// Define control pins on Port 1
+sbit RS = P1^0; // Register Select pin
+sbit RW = P1^1; // Read/Write pin
+sbit E  = P1^2; // Enable pin
+
+// Function Prototypes
+void Delay(unsigned int ms);
+void LCD_Command(unsigned char cmd);
+void LCD_Char(unsigned char Data);
+void LCD_Init(void);
+void LCD_String(char *str);
+
+void main() {
+    LCD_Init();         // Initialize LCD
+    LCD_String("ISQUAREIT"); // Display message
+    while (1);          // Loop forever
+}
+
+void LCD_Init(void) {
+    Delay(20);         // Wait for >15 ms after power on
+    LCD_Command(0x38); // 2 Lines, 5x7 Matrix, 8-bit mode
+    Delay(5);
+    LCD_Command(0x0C); // Display ON, Cursor OFF
+    LCD_Command(0x06); // Increment cursor (move right)
+    LCD_Command(0x01); // Clear display
+    Delay(2);
+}
+
+// Function to send a command to the LCD
+void LCD_Command(unsigned char cmd) {
+    RS = 0;       // Command mode (RS=0)
+    RW = 0;       // Write mode (RW=0)
+    LCD = cmd;    // Send command to Port 0
+    E = 1;        // Enable high
+    Delay(1);
+    E = 0;        // Enable low (latch command)
+    Delay(5);     // Wait for command to be executed
+}
+
+// Function to send data (character) to the LCD
+void LCD_Char(unsigned char Data) {
+    RS = 1;       // Data mode (RS=1)
+    RW = 0;       // Write mode (RW=0)
+    LCD = Data;   // Send data to Port 0
+    E = 1;        // Enable high
+    Delay(1);
+    E = 0;        // Enable low (latch data)
+    Delay(5);     // Wait for data to be written
+}
+
+// Function to send a string to the LCD
+void LCD_String(char *str) {
+    while (*str) { // Loop until the null terminator ('\0') is reached
+        LCD_Char(*str++); // Send current character, then increment pointer
+    }
+}
+
+// Simple busy-wait delay function
+void Delay(unsigned int ms) {
+    unsigned int i, j;
+    for (i = 0; i < ms; i++) {
+        for (j=0; j<1275; j++); // Approx 1ms delay loop
+    }
+}
